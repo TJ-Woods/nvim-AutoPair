@@ -1,3 +1,4 @@
+local auto_pair = require("AutoPair")
 
 local function s_has(str, char)
     for c in str:gmatch(".") do
@@ -45,7 +46,7 @@ local function HtmlCompleteTag()
     end
 end
 
-function HtmlExpandReturn()
+local function HtmlExpandReturn()
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_prev = string.sub(line, col, col)
@@ -64,7 +65,7 @@ function HtmlExpandReturn()
     end
 end
 
-function AngleBracketDelete()
+local function AngleBracketDelete()
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_prev = string.sub(line, col, col)
@@ -77,7 +78,7 @@ function AngleBracketDelete()
     end
 end
 
-function HtmlAutoDelete()
+local function HtmlAutoDelete()
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_prev = string.sub(line, col, col)
@@ -89,9 +90,9 @@ function HtmlAutoDelete()
     if s_has(angle_bracket, char_prev) then
         return AngleBracketDelete()
     elseif s_has(quotes, char_prev) then
-        return QuoteDelete()
+        return auto_pair.QuoteDelete()
     elseif s_has(start_brackets, char_prev) then
-        return BracketDelete()
+        return auto_pair.BracketDelete()
     else
         return "<BS>"
     end

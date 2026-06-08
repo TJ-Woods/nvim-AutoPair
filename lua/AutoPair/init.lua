@@ -28,7 +28,6 @@ function LuaExpandReturn()
     local match_repeat = start_to_curs:match("repeat%s*$")
 
     if match_opener then
-        print("LUA_ENTER")
         return "<CR>end<Esc>O"
     elseif match_repeat then
         return "<CR>until "
@@ -37,7 +36,7 @@ function LuaExpandReturn()
     end
 end
 
-function QuoteDelete()
+function M.QuoteDelete()
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_prev = string.sub(line, col, col)
@@ -51,7 +50,7 @@ function QuoteDelete()
     end
 end
 
-function AutoBracket(bracket)
+function M.AutoBracket(bracket)
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_next = string.sub(line, col + 1, col + 1)
@@ -66,7 +65,7 @@ function AutoBracket(bracket)
 end
 
 
-function TypeOver(closing_char)
+function M.TypeOver(closing_char)
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_under_cursor = string.sub(line, col + 1, col + 1)
@@ -79,7 +78,7 @@ function TypeOver(closing_char)
 end
 
 
-function AutoQuote(quote_char)
+function M.AutoQuote(quote_char)
   local col = vim.api.nvim_win_get_cursor(0)[2]
   local line = vim.api.nvim_get_current_line()
   local char_under_cursor = string.sub(line, col + 1, col + 1)
@@ -94,7 +93,7 @@ end
 
 
 
-function BracketDelete()
+function M.BracketDelete()
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_next_next = string.sub(line, col + 2, col + 2)
@@ -114,7 +113,7 @@ function BracketDelete()
 end
 
 
-function AutoDelete()
+function M.AutoDelete()
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_prev = string.sub(line, col, col)
@@ -132,7 +131,7 @@ function AutoDelete()
 end
 
 
-function ExpandReturn()
+function M.ExpandReturn()
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_next = string.sub(line, col + 1, col + 1)
@@ -149,7 +148,7 @@ function ExpandReturn()
 end
 
 
-function ExpandBracketSpace()
+function M.ExpandBracketSpace()
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_next = string.sub(line, col + 1, col + 1)
@@ -173,3 +172,5 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.keymap.set("i", "<CR>", LuaExpandReturn, { desc = "Auto-insert end for Lua blocks", expr = true, buffer = true })
     end,
 })
+
+return M
