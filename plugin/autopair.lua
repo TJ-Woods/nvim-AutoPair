@@ -21,6 +21,6 @@ vim.keymap.set("i", "`", function() return AutoQuote("`") end, { desc = "Close B
 
 
 -- Keymaps for expanding
-vim.keymap.set("i", "<CR>", ExpandEnter, { desc = "Expand <CR> inside brackets", expr = true, silent = true })
+vim.keymap.set("i", "<CR>", ExpandReturn, { desc = "Expand <CR> inside brackets", expr = true, silent = true })
 vim.keymap.set("i", "<BS>", AutoDelete, { desc = "Smart delete respectful to paired brackets and quotes", expr = true, silent = true })
 vim.keymap.set("i", " ", ExpandBracketSpace, { desc = "Expand the space to both sides of an internally spaced bracket", expr = true, silent = true })
