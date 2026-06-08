@@ -3,9 +3,9 @@ local M = {}
 -- Default Config
 M.config = {}
 
-
 function M.setup(opts)
     if type(opts) ~= "table" then return end
+    -- TODO: Is config appliccable to this plugin?
     M.config = vim.tbl_deep_extend("force", M.config, opts)
 end
 
