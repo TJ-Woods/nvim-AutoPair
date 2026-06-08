@@ -50,18 +50,12 @@ local function HtmlExpandReturn()
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_prev = string.sub(line, col, col)
-    local char_next = string.sub(line, col + 1, col + 1)
     local chars_next = string.sub(line, col + 1, col + 2)
-    local start_brackets = "([{"
-    local end_brackets = ")]}"
-    local index = string.find(start_brackets, char_prev, 1, true)
 
     if char_prev == ">" and chars_next == "</" then
         return "<CR><Esc>O"
-    elseif index and string.sub(end_brackets, index, index) == char_next then
-        return "<CR><Esc>O"
     else
-        return "<CR>"
+        return auto_pair.ExpandReturn()
     end
 end
 
@@ -82,19 +76,12 @@ local function HtmlAutoDelete()
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_prev = string.sub(line, col, col)
-
-    local quotes = "\"'`"
-    local start_brackets = "([{"
     local angle_bracket = "<"
 
     if s_has(angle_bracket, char_prev) then
         return AngleBracketDelete()
-    elseif s_has(quotes, char_prev) then
-        return auto_pair.QuoteDelete()
-    elseif s_has(start_brackets, char_prev) then
-        return auto_pair.BracketDelete()
     else
-        return "<BS>"
+        return auto_pair.AutoDelete()
     end
 end
 

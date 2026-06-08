@@ -18,23 +18,6 @@ local function s_has(str, char)
     return false
 end
 
-function LuaExpandReturn()
-    local curs = vim.api.nvim_win_get_cursor(0)[2]
-    local line = vim.api.nvim_get_current_line()
-    local start_to_curs = string.sub(line, 1, curs)
-    local match_opener = start_to_curs:match("%s*function%s*[%w_.:]*%(.*%)%s*$")
-        or (start_to_curs:match("if%s+.*%s+then%s*$") and not start_to_curs:match(".*elseif.*"))
-        or start_to_curs:match("do%s*$")
-    local match_repeat = start_to_curs:match("repeat%s*$")
-
-    if match_opener then
-        return "<CR>end<Esc>O"
-    elseif match_repeat then
-        return "<CR>until "
-    else
-        return "<CR>"
-    end
-end
 
 function M.QuoteDelete()
     local col = vim.api.nvim_win_get_cursor(0)[2]
@@ -122,9 +105,9 @@ function M.AutoDelete()
     local start_brackets = "([{"
 
     if s_has(quotes, char_prev) then
-        return QuoteDelete()
+        return M.QuoteDelete()
     elseif s_has(start_brackets, char_prev) then
-        return BracketDelete()
+        return M.BracketDelete()
     else
         return "<BS>"
     end
@@ -163,14 +146,5 @@ function M.ExpandBracketSpace()
         return " "
     end
 end
-
-
-
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "lua",
-    callback = function()
-        vim.keymap.set("i", "<CR>", LuaExpandReturn, { desc = "Auto-insert end for Lua blocks", expr = true, buffer = true })
-    end,
-})
 
 return M
