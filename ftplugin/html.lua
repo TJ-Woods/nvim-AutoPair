@@ -1,6 +1,4 @@
 
-local auto_pair = require("AutoPair")
-
 local function s_has(str, char)
     for c in str:gmatch(".") do
         if c == char then
@@ -91,9 +89,9 @@ function HtmlAutoDelete()
     if s_has(angle_bracket, char_prev) then
         return AngleBracketDelete()
     elseif s_has(quotes, char_prev) then
-        return auto_pair.QuoteDelete()
+        return QuoteDelete()
     elseif s_has(start_brackets, char_prev) then
-        return auto_pair.BracketDelete()
+        return BracketDelete()
     else
         return "<BS>"
     end
