@@ -1,20 +1,16 @@
 -- Keymaps for bracket autopair
-
 vim.keymap.set("i", "(", function() return AutoBracket("(") end, { desc = "Close Bracket", expr = true, silent = true })
 vim.keymap.set("i", "[", function() return AutoBracket("[") end, { desc = "Close Square Bracket", expr = true, silent = true })
 vim.keymap.set("i", "{", function() return AutoBracket("{") end, { desc = "Close Curly Bracket", expr = true, silent = true })
-vim.keymap.set("i", "<", function() return AutoBracket("<") end, { desc = "Close Angle Bracket", expr = true, silent = true })
 
 
 -- Keymaps for bracket type-over
 vim.keymap.set("i", ")", function() return TypeOver(")") end, { desc = "Allow Bracket Type-over", expr = true, silent = true })
 vim.keymap.set("i", "]", function() return TypeOver("]") end, { desc = "Allow Square Bracket Type-over", expr = true, silent = true })
 vim.keymap.set("i", "}", function() return TypeOver("}") end, { desc = "Allow Curly Bracket Type-over", expr = true, silent = true })
-vim.keymap.set("i", ">", function() return TypeOver(">") end, { desc = "Allow Angle Bracket Type-over", expr = true, silent = true })
 
 
 -- Keymaps for Quotation marks
-
 vim.keymap.set("i", "'", function() return AutoQuote("'") end, { desc = "Close Single Quotes", expr = true, silent = true })
 vim.keymap.set("i", '"', function() return AutoQuote('"') end, { desc = "Close Double Quotes", expr = true, silent = true })
 vim.keymap.set("i", "`", function() return AutoQuote("`") end, { desc = "Close Backtick Quotes", expr = true, silent = true })
