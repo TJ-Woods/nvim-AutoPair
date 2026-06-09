@@ -65,9 +65,8 @@ function M.QuoteDelete()
 
     if s_has(quotes, char_prev) and char_prev == char_next then
         return "<BS><Del>"
-    else
-        return "<BS>"
     end
+    return "<BS>"
 end
 
 function M.AutoBracket(bracket)
@@ -92,25 +91,21 @@ function M.TypeOver(closing_char)
 
     if char_under_cursor == closing_char then
         return '<Right>'
-    else
-        return closing_char
     end
+    return closing_char
 end
 
 
 function M.AutoQuote(quote_char)
-  local col = vim.api.nvim_win_get_cursor(0)[2]
-  local line = vim.api.nvim_get_current_line()
-  local char_under_cursor = string.sub(line, col + 1, col + 1)
+    local col = vim.api.nvim_win_get_cursor(0)[2]
+    local line = vim.api.nvim_get_current_line()
+    local char_under_cursor = string.sub(line, col + 1, col + 1)
 
-  if char_under_cursor == quote_char then
-    return '<Right>'
-  else
+    if char_under_cursor == quote_char then
+        return '<Right>'
+    end
     return quote_char .. quote_char .. '<Left>'
-  end
 end
-
-
 
 
 function M.BracketDelete()
@@ -129,9 +124,8 @@ function M.BracketDelete()
         elseif index and (char_next == " " and char_next_next == string.sub(end_brackets, index, index)) then
             return "<BS><DEL><DEL>"
         end
-    else
-        return "<BS>"
     end
+    return "<BS>"
 end
 
 
@@ -147,9 +141,8 @@ function M.AutoDelete()
         return M.QuoteDelete()
     elseif s_has(start_brackets, char_prev) then
         return M.BracketDelete()
-    else
-        return "<BS>"
     end
+    return "<BS>"
 end
 
 
@@ -164,9 +157,8 @@ function M.ExpandReturn()
 
     if index and string.sub(end_brackets, index, index) == char_next then
         return "<CR><Esc>O"
-    else
-        return "<CR>"
     end
+    return "<CR>"
 end
 
 
@@ -181,9 +173,8 @@ function M.ExpandBracketSpace()
 
     if index and char_next == string.sub(end_brackets, index, index) then
         return " <left> "
-    else
-        return " "
     end
+    return " "
 end
 
 return M

@@ -13,11 +13,9 @@ local function LuaExpandReturn()
         return "<CR>end<Esc>O"
     elseif match_repeat then
         return "<CR>until "
-    else
-        return auto_pair.ExpandReturn()
     end
+    return auto_pair.ExpandReturn()
 end
-
 
 
 vim.keymap.set("i", "<CR>", LuaExpandReturn, { desc = "AutoPair: Expand Return in Lua files.", expr = true, silent = true, buffer = true })

@@ -41,9 +41,8 @@ local function HtmlCompleteTag()
 
     if is_writeover then
         return "<Right>"
-    else
-        return ">"
     end
+    return ">"
 end
 
 local function HtmlExpandReturn()
@@ -54,9 +53,8 @@ local function HtmlExpandReturn()
 
     if char_prev == ">" and chars_next == "</" then
         return "<CR><Esc>O"
-    else
-        return auto_pair.ExpandReturn()
     end
+    return auto_pair.ExpandReturn()
 end
 
 local function AngleBracketDelete()
@@ -67,9 +65,8 @@ local function AngleBracketDelete()
 
     if char_prev == "<" and char_next == ">" then
         return "<BS><Del>"
-    else
-        return "<BS>"
     end
+    return "<BS>"
 end
 
 local function HtmlAutoDelete()
@@ -80,9 +77,8 @@ local function HtmlAutoDelete()
 
     if s_has(angle_bracket, char_prev) then
         return AngleBracketDelete()
-    else
-        return auto_pair.AutoDelete()
     end
+    return auto_pair.AutoDelete()
 end
 
 
