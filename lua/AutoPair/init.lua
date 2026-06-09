@@ -18,6 +18,43 @@ local function s_has(str, char)
     return false
 end
 
+function M.InBracketPair()
+    local openers = { ['('] = true, ['['] = true, ['{'] = true }
+    local closers = { [')'] = '(', [']'] = '[', ['}'] = '{' }
+
+    local line = vim.api.nvim_get_current_line()
+    local col = vim.api.nvim_win_get_cursor(0)[2]
+    local left_side = line:sub(1, col)
+    local right_side = line:sub(col + 1)
+    local balances = { ['('] = 0, ['['] = 0, ['{'] = 0 }
+
+    for i = 1, #left_side do
+        local char = left_side:sub(i, i)
+        if openers[char] then
+            balances[char] = balances[char] + 1
+        elseif closers[char] then
+            local matching_opener = closers[char]
+            if balances[matching_opener] > 0 then
+                balances[matching_opener] = balances[matching_opener] - 1
+            end
+        end
+    end
+
+    for i = 1, #right_side do
+        local char = right_side:sub(i, i)
+        if openers[char] then
+            balances[char] = balances[char] - 1
+        elseif closers[char] then
+            local matching_opener = closers[char]
+            balances[matching_opener] = balances[matching_opener] - 1
+            if balances[matching_opener] == 0 then
+                return true
+            end
+        end
+    end
+    return false
+end
+
 
 function M.QuoteDelete()
     local col = vim.api.nvim_win_get_cursor(0)[2]
@@ -86,10 +123,12 @@ function M.BracketDelete()
     local end_brackets = ")]}"
     local index = string.find(start_brackets, char_prev, 1, true)
 
-    if index and (char_next == string.sub(end_brackets, index, index)) then
-        return "<BS><DEL>"
-    elseif index and (char_next == " " and char_next_next == string.sub(end_brackets, index, index)) then
-        return "<BS><DEL><DEL>"
+    if M.InBracketPair() then
+        if index and (char_next == string.sub(end_brackets, index, index)) then
+            return "<BS><DEL>"
+        elseif index and (char_next == " " and char_next_next == string.sub(end_brackets, index, index)) then
+            return "<BS><DEL><DEL>"
+        end
     else
         return "<BS>"
     end
