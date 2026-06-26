@@ -18,6 +18,43 @@ local function s_has(str, char)
     return false
 end
 
+local function any(tbl)
+    for _, value in pairs(tbl) do
+        if value == true then return true end
+    end
+    return false
+end
+
+local function count(tbl)
+    local total = 0
+    for _, value in pairs(tbl) do
+        if value == true then
+            total = total + 1
+        end
+    end
+    return total
+end
+
+function M.InQuotePair()
+    local quotes = { ["'"] = true, ['"'] = true, ["`"] = true }
+    local line = vim.api.nvim_get_current_line()
+    local col = vim.api.nvim_win_get_cursor(0)[2]
+    local char_next = line:sub(col+1, col+1)
+    local left_side = line:sub(1, col)
+    local active = { ["'"] = false, ['"'] = false, ["`"] = false }
+
+    for i = 1, #left_side do
+        local char = left_side:sub(i, i)
+        if quotes[char] then
+            if count(active) == 0 or (count(active) == 1 and active[char]) and left_side:sub(i-1, i-1) ~= "\\" then
+                active[char] = not active[char]
+            end
+        end
+    end
+
+    return any(active) and (char_next == '"' or char_next == "`" or char_next == "'")
+end
+
 function M.InBracketPair()
     local openers = { ['('] = true, ['['] = true, ['{'] = true }
     local closers = { [')'] = '(', [']'] = '[', ['}'] = '{' }
@@ -77,7 +114,8 @@ function M.AutoBracket(bracket)
     local end_brackets = ")]}"
     local index = string.find(start_brackets, bracket, 1, true)
 
-    if index and (char_next == "" or char_next == " " or s_has(end_brackets, char_next)) then
+    -- if next char is blank or a closing bracket or a closing quote
+    if index and (char_next == "" or char_next == " " or s_has(end_brackets, char_next) or (M.InQuotePair() and (char_next == "'" or char_next == "`" or char_next == '"'))) then
         return bracket .. string.sub(end_brackets, index, index) .. "<left>"
     end
     return bracket
