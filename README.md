@@ -68,13 +68,71 @@ This looks like the following in practice: (| = cursor)
 ## Lua-Specific Completion
 Since this plugin was written in Lua, while creating it, I came across some things that I would have found useful to have for writing in Lua so I added them to this plugin.
 When typing out a function definition, this plugin will add the `end` statement once the enter key is pressed.
-When typing out an if statement, for loop, while loop, or repeat-until loop, the appropriate ending will be automatically typed out for you.
+When typing out an if statement, function definition, for loop, while loop, or repeat-until loop, the appropriate ending will be automatically typed out for you.
+
+For example:
+``` Lua
+local function foo(bar)|
+
+-- Press <Return>
+
+local function foo(bar)
+    |
+end
+```
+
+or
+``` Lua
+if (condition) then|
+
+-- Press <Return>
+
+if (condition) then
+    |
+end
+
+
+-- This also respects multi-branched if-statements, ignoring the elseif and else clauses
+
+if (condition) then
+    do_this()
+elseif (other_condition) then|
+end
+
+-- Press <Return>
+
+if (condition) then
+    do_this()
+elseif (other_condition) then
+    | -- simply notice that no additional 'end' keyword was placed
+end
+```
 
 ## HTML-Specific Completion
-When writing HTML tags, this plugin will automatically add the closing tag `</*tag_name*>` to appliccable tags that require closing. It will also autocomplete the closing of the angled bracket when writing out the tag name and once it is typed over, it will complete the tag close.
+When writing HTML tags, this plugin will automatically add the closing tag `</*tag_name*>` to applicable tags that require closing.
+It will also autocomplete the closing of the angled bracket when writing out the tag name and once it is typed over, it will complete the tag close.
+
+For example, opening the angle bracket closes the bracket after the cursor
+``` html
+<|>
+
+<div|>
+
+typing over the closing angle bracker `>` will auto-complete the closing tag
+
+<div>|</div>
+
+
+Pressing return will do automatic spacing for nice insertion
+
+<div>
+    |
+</div>
+```
+
+
 
 
 
 # What more is to come?
 - More language-specific functionality
-- Better auto-deletion of adjacent brackets dealing with nested brackets of the same type.
