@@ -1,5 +1,5 @@
 # nvim-AutoPair
-Autocompletion for pairs and structures for Neovim
+Auto-completion for pairs and structures for Neovim
 
 # Setup
 This plugin does not require setup as of its current state. It will create the keymaps and autocommands upon Neovim startup.
@@ -11,6 +11,9 @@ This plugin does not require setup as of its current state. It will create the k
 This plugin was originally created with the purpose of autocompleting and providing nice features regarding typing brackets `()[]{}` and quotation marks ''""``
 It types out the closing bracket once the opening bracket is typed, and allows type-over so that fast typing a function call for example, isn't annoying.
 Since then, it has expanded to also expand spaces, returns, and backspaces to work nicely with brackets.
+
+
+## Spaces and Returns
 Typing a <CR> while between a set of brackets will produce the following: (| = cursor)
 ```
 int main() {|}
@@ -35,7 +38,7 @@ vec2 coords = {|}
 vec2 coords = { | }
 ```
 
-## Auto-Deleting Brackets
+## Assisted Deleting of Brackets
 When brackets or quotes are adjacent, and you try to backspace one of them, both will be backspaced.
 This looks like the following in practice: (| = cursor)
 ```
@@ -65,13 +68,31 @@ This looks like the following in practice: (| = cursor)
 ```
 
 
+## Wrapping Selected Blocks with Pairs
+Visual selections can be wrapped with quotation marks and/or brackets.
+For standard visual selection and block selection, the selected block will not contain the newly appended wrapper characters.
+For visual line selection, the complete lines, including the wrapper characters will be included in the visual selection.
+
+For example: ('< = start of selection, '> = end of selection)
+``` lua
+if '<condition'> then
+    do_thing()
+end
+
+*type "("*
+
+if ('<condition'>) then
+    do_thing()
+end
+```
+
 ## Lua-Specific Completion
 Since this plugin was written in Lua, while creating it, I came across some things that I would have found useful to have for writing in Lua so I added them to this plugin.
 When typing out a function definition, this plugin will add the `end` statement once the enter key is pressed.
 When typing out an if statement, function definition, for loop, while loop, or repeat-until loop, the appropriate ending will be automatically typed out for you.
 
 For example:
-``` Lua
+``` lua
 local function foo(bar)|
 
 -- Press <Return>
@@ -82,7 +103,7 @@ end
 ```
 
 or
-``` Lua
+``` lua
 if (condition) then|
 
 -- Press <Return>
