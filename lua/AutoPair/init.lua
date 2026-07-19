@@ -216,15 +216,25 @@ function M.ExpandBracketSpace()
 end
 
 function M.SurroundVisual(open_char, close_char)
-    local start_pos = vim.fn.getpos("'<")
-    local end_pos = vim.fn.getpos("'>")
+    -- beginning and end of selection (could be backwards)
+    local pos_v = vim.fn.getpos("v")
+    local pos_dot = vim.fn.getpos(".")
 
-    -- Prevent running if marks aren't set correctly
-    if start_pos[2] == 0 or end_pos[2] == 0 then return end
+    -- Determine linear start and end (left-to-right)
+    local start_pos
+    local end_pos
+    if pos_v[2] < pos_dot[2] or (pos_v[2] == pos_dot[2] and pos_v[3] <= pos_dot[3]) then
+        start_pos = pos_v
+        end_pos = pos_dot
+    else
+        start_pos = pos_dot
+        end_pos = pos_v
+    end
 
     -- Exit visual mode temporarily to set the '< and '> marks firmly
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "x", true)
 
+    -- 0-indexing for API calls
     local start_line, start_col = start_pos[2] - 1, start_pos[3] - 1
     local end_line, end_col = end_pos[2] - 1, end_pos[3]
 
