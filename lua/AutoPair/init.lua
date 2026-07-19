@@ -215,30 +215,36 @@ function M.ExpandBracketSpace()
     return " "
 end
 
+
 function M.SurroundVisual(open_char, close_char)
-    -- beginning and end of selection (could be backwards)
+    local mode = vim.fn.mode()
+
     local pos_v = vim.fn.getpos("v")
     local pos_dot = vim.fn.getpos(".")
 
-    -- Determine linear start and end (left-to-right)
-    local start_pos
-    local end_pos
+    local start_line, end_line
+    local start_col, end_col
+
     if pos_v[2] < pos_dot[2] or (pos_v[2] == pos_dot[2] and pos_v[3] <= pos_dot[3]) then
-        start_pos = pos_v
-        end_pos = pos_dot
+        start_line = pos_v[2] - 1
+        end_line = pos_dot[2] - 1
+        start_col = pos_v[3] - 1
+        end_col = pos_dot[3]
     else
-        start_pos = pos_dot
-        end_pos = pos_v
+        start_line = pos_dot[2] - 1
+        end_line = pos_v[2] - 1
+        start_col = pos_dot[3] - 1
+        end_col = pos_v[3]
     end
 
-    -- Exit visual mode temporarily to set the '< and '> marks firmly
+    if mode == "V" then
+        start_col = 0
+        local target_line_text = vim.api.nvim_buf_get_lines(0, end_line, end_line + 1, false)[1] or ""
+        end_col = #target_line_text
+    end
+
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "x", true)
 
-    -- 0-indexing for API calls
-    local start_line, start_col = start_pos[2] - 1, start_pos[3] - 1
-    local end_line, end_col = end_pos[2] - 1, end_pos[3]
-
-    -- Closing character first (doesn't shift the selection)
     vim.api.nvim_buf_set_text(0, end_line, end_col, end_line, end_col, { close_char })
     vim.api.nvim_buf_set_text(0, start_line, start_col, start_line, start_col, { open_char })
 
@@ -248,11 +254,9 @@ function M.SurroundVisual(open_char, close_char)
         new_end_col = end_col + #open_char
     end
 
-    -- Set the visual marks to include the newly added wrappers
-    vim.fn.setpos("'<", { start_pos[1], start_line + 1, new_start_col + 1, 0 })
-    vim.fn.setpos("'>", { end_pos[1], end_line + 1, new_end_col, 0 })
+    vim.fn.setpos("'<", { pos_v[1], start_line + 1, new_start_col + 1, 0 })
+    vim.fn.setpos("'>", { pos_dot[1], end_line + 1, new_end_col, 0 })
 
-    -- 5. Re-enter visual mode using the updated marks
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("gv", true, false, true), "n", true)
 end
 
