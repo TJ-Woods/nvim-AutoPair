@@ -215,4 +215,35 @@ function M.ExpandBracketSpace()
     return " "
 end
 
+function M.SurroundVisual(open_char, close_char)
+    local start_pos = vim.fn.getpos("'<")
+    local end_pos = vim.fn.getpos("'>")
+
+    -- Prevent running if marks aren't set correctly
+    if start_pos[2] == 0 or end_pos[2] == 0 then return end
+
+    -- Exit visual mode temporarily to set the '< and '> marks firmly
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "x", true)
+
+    local start_line, start_col = start_pos[2] - 1, start_pos[3] - 1
+    local end_line, end_col = end_pos[2] - 1, end_pos[3]
+
+    -- Closing character first (doesn't shift the selection)
+    vim.api.nvim_buf_set_text(0, end_line, end_col, end_line, end_col, { close_char })
+    vim.api.nvim_buf_set_text(0, start_line, start_col, start_line, start_col, { open_char })
+
+    local new_start_col = start_col + #open_char
+    local new_end_col = end_col
+    if start_line == end_line then
+        new_end_col = end_col + #open_char
+    end
+
+    -- Set the visual marks to include the newly added wrappers
+    vim.fn.setpos("'<", { start_pos[1], start_line + 1, new_start_col + 1, 0 })
+    vim.fn.setpos("'>", { end_pos[1], end_line + 1, new_end_col, 0 })
+
+    -- 5. Re-enter visual mode using the updated marks
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("gv", true, false, true), "n", true)
+end
+
 return M

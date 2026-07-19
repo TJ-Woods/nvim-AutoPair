@@ -22,3 +22,12 @@ vim.keymap.set("i", "`", function() return auto_pair.AutoQuote("`") end, { desc 
 vim.keymap.set("i", "<CR>", auto_pair.ExpandReturn, { desc = "Expand <CR> inside brackets", expr = true, silent = true })
 vim.keymap.set("i", "<BS>", auto_pair.AutoDelete, { desc = "Smart delete respectful to paired brackets and quotes", expr = true, silent = true })
 vim.keymap.set("i", " ", auto_pair.ExpandBracketSpace, { desc = "Expand the space to both sides of an internally spaced bracket", expr = true, silent = true })
+
+
+-- Keymaps for visual selection wrapping
+vim.keymap.set("x", "(", function() auto_pair.SurroundVisual("(", ")") end, { desc = "Wrap with Bracket", silent = true })
+vim.keymap.set("x", "[", function() auto_pair.SurroundVisual("[", "]") end, { desc = "Wrap with Square Bracket", silent = true })
+vim.keymap.set("x", "{", function() auto_pair.SurroundVisual("{", "}") end, { desc = "Wrap with Curly Bracket", silent = true })
+vim.keymap.set("x", '"', function() auto_pair.SurroundVisual('"', '"') end, { desc = "Wrap with Bracket", silent = true })
+vim.keymap.set("x", "'", function() auto_pair.SurroundVisual("'", "'") end, { desc = "Wrap with Square Bracket", silent = true })
+vim.keymap.set("x", "`", function() auto_pair.SurroundVisual("`", "`") end, { desc = "Wrap with Curly Bracket", silent = true })
