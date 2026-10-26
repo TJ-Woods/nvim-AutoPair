@@ -9,6 +9,9 @@ function M.setup(opts)
     M.config = vim.tbl_deep_extend("force", M.config, opts)
 end
 
+---@param str string parent string
+---@param char string character so search for
+---@desc parent string, child string (target)
 local function s_has(str, char)
     for c in str:gmatch(".") do
         if c == char then
@@ -94,6 +97,8 @@ end
 
 
 function M.QuoteDelete()
+    -- Detects quotation marks before and after cursor;
+    -- deletes if true
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_prev = string.sub(line, col, col)
@@ -107,6 +112,8 @@ function M.QuoteDelete()
 end
 
 function M.AutoBracket(bracket)
+    -- Detects if next character is empty or space or a closing bracket;
+    -- inserts respective closing bracket ahead of cursor if true
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_next = string.sub(line, col + 1, col + 1)
@@ -123,6 +130,8 @@ end
 
 
 function M.TypeOver(closing_char)
+    -- Detects if character under cursor is equal to character typed;
+    -- skips insertion if true
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_under_cursor = string.sub(line, col + 1, col + 1)
@@ -135,6 +144,9 @@ end
 
 
 function M.AutoQuote(quote_char)
+    -- Detects if character under cursor is quote;
+    -- skips insertion if true
+    -- places respective closing quote under cursor if false
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_under_cursor = string.sub(line, col + 1, col + 1)
@@ -147,6 +159,9 @@ end
 
 
 function M.BracketDelete()
+    -- Checks if in bracket pair and next char is closing bracket;
+    -- deletes both brackets if true
+    -- deletes previous bracket if false
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_next_next = string.sub(line, col + 2, col + 2)
@@ -156,18 +171,74 @@ function M.BracketDelete()
     local end_brackets = ")]}"
     local index = string.find(start_brackets, char_prev, 1, true)
 
-    if M.InBracketPair() then
-        if index and (char_next == string.sub(end_brackets, index, index)) then
-            return "<BS><DEL>"
-        elseif index and (char_next == " " and char_next_next == string.sub(end_brackets, index, index)) then
-            return "<BS><DEL><DEL>"
-        end
+    if (index and M.InBracketPair() and char_next == string.sub(end_brackets, index, index)) then
+        return "<BS><DEL>"
     end
     return "<BS>"
 end
 
 
+function M.SpacePaddingDelete()
+    -- Checks if surrounding characters are space, and surrounding those are brackets
+    -- deletes both spaces if true
+    -- normal delete if false
+    local col = vim.api.nvim_win_get_cursor(0)[2]
+    local line = vim.api.nvim_get_current_line()
+    local char_next_next = string.sub(line, col + 2, col + 2)
+    local char_next = string.sub(line, col + 1, col + 1)
+    local char_prev = string.sub(line, col, col)
+    local char_prev_prev = string.sub(line, math.max(col - 1, 0), math.max(col - 1, 0))
+    local start_brackets = "([{"
+    local end_brackets = ")]}"
+
+    -- Define index (which bracket pair to work with)
+    if (M.InBracketPair() and s_has(start_bracket, char_prev_prev)) then
+        index = string.find(start_bracket, char_prev_prev, 1, true)
+        if (char_prev == " " and char_next == " " and char_next_next == string.sub(end_brackets, index, index)) then
+            return "<BS><DEL>"
+        end
+        return "<BS>"
+    end
+    return "<BS>"
+end
+
+
+function M.ReturnPaddingDelete()
+    -- Checks if line is only \n
+    -- checks if previous line last character is bracket
+    -- checks if next line first (non-whitespace) character is matching bracket
+    -- deletes to collapse returns
+    -- TODO: only detect non-whitespace characters for end of previousline
+    local col = vim.api.nvim_win_get_cursor(0)[2]
+    local row = vim.api.nvim_win_get_cursor(0)[1]
+    local curr_line = vim.api.nvim_get_current_line()
+
+    -- last character of previous line
+    local prev_line = vim.api.nvim_buf_get_text(0, row-2, -2, row-2, -1)
+
+    -- first character of next line
+    local next_l = vim.api.nvim_buf_get_lines(0, row, row+1, true)[1]
+    local next_line = string.sub(next_l, string.find(next_l, "%S"))
+
+    local start_brackets = "([{"
+    local end_brackets = ")]}"
+
+    local index = string.find(start_brackets, prev_line, 1, true)
+
+    if (index and curr_line == "" and next_line == string.sub(end_brackets, index, index)) then
+        return "<BS><ESC>Ji<DEL>"  -- Collapse return padding
+    end
+    return "<BS>"
+
+end
+
+
 function M.AutoDelete()
+    -- if previous character is a quote, goto QuoteDelete
+    -- elseif previous character is a bracket, goto BracketDelete
+    -- elseif previous character is a space, goto SpacePaddingDelete
+    -- elseif previous character is a return, goto ReturnPaddingDelete
+    -- else backspace
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_prev = string.sub(line, col, col)
@@ -179,12 +250,18 @@ function M.AutoDelete()
         return M.QuoteDelete()
     elseif s_has(start_brackets, char_prev) then
         return M.BracketDelete()
+    elseif prev_char == " " then
+        return M.SpacePaddingDelete()
+    elseif prev_char == "\n" then
+        return M.ReturnPaddingDelete()
     end
     return "<BS>"
 end
 
 
 function M.ExpandReturn()
+    -- if characters either side of cursor are brackets, double return
+    -- else normal return
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_next = string.sub(line, col + 1, col + 1)
@@ -201,6 +278,8 @@ end
 
 
 function M.ExpandBracketSpace()
+    -- if cursor between brackets, double space
+    -- else normal space
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
     local char_next = string.sub(line, col + 1, col + 1)
@@ -217,6 +296,10 @@ end
 
 
 function M.SurroundVisual(open_char, close_char)
+    -- grab selection box
+    -- insert open_char before selection box
+    -- insert close_char after selection box
+    -- re-select selection box (not including inserted characters)
     local mode = vim.fn.mode()
 
     local pos_v = vim.fn.getpos("v")
