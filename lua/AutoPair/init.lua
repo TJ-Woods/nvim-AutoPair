@@ -229,11 +229,6 @@ function M.ReturnPaddingDelete()
         return "<BS><ESC>Ji<DEL>"  -- Collapse return padding
     end
     return "<BS>"
-
-    int main() {
-
-    }
-
 end
 
 
