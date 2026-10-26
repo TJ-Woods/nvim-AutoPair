@@ -204,7 +204,7 @@ end
 
 
 function M.ReturnPaddingDelete()
-    -- Checks if line is only \n
+    -- Checks if line is empty
     -- checks if previous line last character is bracket
     -- checks if next line first (non-whitespace) character is matching bracket
     -- deletes to collapse returns
@@ -214,7 +214,7 @@ function M.ReturnPaddingDelete()
     local curr_line = vim.api.nvim_get_current_line()
 
     -- last character of previous line
-    local prev_line = vim.api.nvim_buf_get_text(0, row-2, -2, row-2, -1)
+    local prev_line = vim.api.nvim_buf_get_text(0, row-2, -2, row-2, -1, {})[1]
 
     -- first character of next line
     local next_l = vim.api.nvim_buf_get_lines(0, row, row+1, true)[1]
@@ -230,6 +230,10 @@ function M.ReturnPaddingDelete()
     end
     return "<BS>"
 
+    int main() {
+
+    }
+
 end
 
 
@@ -237,7 +241,7 @@ function M.AutoDelete()
     -- if previous character is a quote, goto QuoteDelete
     -- elseif previous character is a bracket, goto BracketDelete
     -- elseif previous character is a space, goto SpacePaddingDelete
-    -- elseif previous character is a return, goto ReturnPaddingDelete
+    -- elseif line is empty, goto ReturnPaddingDelete
     -- else backspace
     local col = vim.api.nvim_win_get_cursor(0)[2]
     local line = vim.api.nvim_get_current_line()
