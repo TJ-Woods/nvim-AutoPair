@@ -38,7 +38,7 @@ vec2 coords = {|}
 vec2 coords = { | }
 ```
 
-## Assisted Deleting of Brackets
+## Assisted Deleting of Brackets and spaces
 When brackets or quotes are adjacent, and you try to backspace one of them, both will be backspaced.
 This looks like the following in practice: (| = cursor)
 ```
@@ -51,6 +51,7 @@ This looks like the following in practice: (| = cursor)
 |
 ```
 
+It also clears up space padding between brackets
 ```
 ( | )
 
@@ -58,13 +59,25 @@ This looks like the following in practice: (| = cursor)
 *press backspace*
 
 
-(| )
+(|)
+```
 
+And return padding between brackets
+```
+int main() {
+    |
+}
 
 *press backspace*
 
-
+int main() {
 |
+}
+
+*press backspace*
+
+int main() {|}
+
 ```
 
 
