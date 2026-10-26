@@ -218,7 +218,8 @@ function M.ReturnPaddingDelete()
 
     -- first character of next line
     local next_l = vim.api.nvim_buf_get_lines(0, row, row+1, false)[1]
-    local next_line = string.sub(next_l, string.find(next_l, "%S"))
+    local next_li = string.find(next_l, "%S") or ""
+    local next_line = string.sub(next_l, next_li)
 
     local start_brackets = "([{"
     local end_brackets = ")]}"
@@ -343,3 +344,4 @@ function M.SurroundVisual(open_char, close_char)
 end
 
 return M
+
