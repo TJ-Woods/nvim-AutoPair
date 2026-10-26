@@ -250,9 +250,9 @@ function M.AutoDelete()
         return M.QuoteDelete()
     elseif s_has(start_brackets, char_prev) then
         return M.BracketDelete()
-    elseif prev_char == " " then
+    elseif char_prev == " " then
         return M.SpacePaddingDelete()
-    elseif prev_char == "\n" then
+    elseif line == "" then
         return M.ReturnPaddingDelete()
     end
     return "<BS>"
