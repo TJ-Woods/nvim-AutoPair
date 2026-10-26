@@ -192,8 +192,8 @@ function M.SpacePaddingDelete()
     local end_brackets = ")]}"
 
     -- Define index (which bracket pair to work with)
-    if (M.InBracketPair() and s_has(start_bracket, char_prev_prev)) then
-        index = string.find(start_bracket, char_prev_prev, 1, true)
+    if (M.InBracketPair() and s_has(start_brackets, char_prev_prev)) then
+        index = string.find(start_brackets, char_prev_prev, 1, true)
         if (char_prev == " " and char_next == " " and char_next_next == string.sub(end_brackets, index, index)) then
             return "<BS><DEL>"
         end
