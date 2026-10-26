@@ -217,7 +217,7 @@ function M.ReturnPaddingDelete()
     local prev_line = vim.api.nvim_buf_get_text(0, row-2, -2, row-2, -1, {})[1]
 
     -- first character of next line
-    local next_l = vim.api.nvim_buf_get_lines(0, row, row+1, false)[1]
+    local next_l = vim.api.nvim_buf_get_lines(0, row, row+1, false)[1] or ""
     local next_li = string.find(next_l, "%S") or 0
     local next_line = string.sub(next_l, next_li)
 
